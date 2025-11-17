@@ -1,7 +1,7 @@
 {
-  "name": "@promethean-os/opencode-client",
+  "name": "@open-hax/cli-client",
   "version": "0.1.0",
-  "description": "CLI client for OpenCode plugins and tools",
+  "description": "Command-line interface client for tools and automation",
   "type": "module",
   "main": "dist/index.js",
   "publishConfig": {

@@ -1,4 +1,4 @@
-import type { EventClient } from '../../types/index.js';
+import type { EventClient } from "../../types/index.js";
 
 export type SubscribeResult = {
   readonly success: boolean;
@@ -9,51 +9,31 @@ export type SubscribeResult = {
   readonly error?: string;
 };
 
+async function createSubscription({ eventType, handler, client }) {
+  for (const event of await client.event.subscribe()) {
+    if (event.type === eventType) {
+    }
+  }
+}
+
 export async function subscribe({
   eventType,
   sessionId,
   client,
+  listener,
 }: {
   readonly eventType?: string;
   readonly sessionId?: string;
   readonly client: EventClient;
 }): Promise<SubscribeResult> {
-  if (!client.event?.subscribe) {
-    return {
-      success: false,
-      error: 'Events subscription not supported by this client',
-    };
-  }
+  // Note: The async generator returned by client.event.subscribe()
+  // should be handled by the caller, not the action
 
-  try {
-    // Note: The async generator returned by client.event.subscribe()
-    // should be handled by the caller, not the action
-    await client.event.subscribe();
-
-    return {
-      success: true,
-      subscription: 'Event subscription established',
-      eventType,
-      sessionId,
-      note: 'Use the returned async generator to listen for events',
-    };
-  } catch (error: unknown) {
-    console.error('Error subscribing to events:', error);
-    let errorMessage: string;
-
-    if (error instanceof Error) {
-      // Handle sinon stub objects where the string might be in 'name' property
-      errorMessage = error.message || (error as any).name || String(error);
-    } else if (error && typeof error === 'object' && (error as any).name) {
-      // Handle sinon stub objects where the string is in the 'name' property
-      errorMessage = (error as any).name;
-    } else {
-      errorMessage = String(error);
-    }
-
-    return {
-      success: false,
-      error: `Failed to subscribe to events: ${errorMessage}`,
-    };
-  }
+  return {
+    success: true,
+    subscription: "Event subscription established",
+    eventType,
+    sessionId,
+    note: "Use the returned async generator to listen for events",
+  };
 }

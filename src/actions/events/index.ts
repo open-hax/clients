@@ -1,12 +1,15 @@
-import { OpencodeClient } from '@opencode-ai/sdk';
+import { OpencodeClient } from "@opencode-ai/sdk";
 
-import type { OpenCodeEvent, EventMessage } from '../../types/index.js';
+import type { OpenCodeEvent, EventMessage } from "../../types/index.js";
 
 export type EventContext = {
   readonly client: OpencodeClient;
 };
 
-export async function handleSessionIdle(_context: EventContext, sessionId: string): Promise<void> {
+export async function handleSessionIdle(
+  _context: EventContext,
+  sessionId: string,
+): Promise<void> {
   console.log(`💤 Session ${sessionId} is idle`);
   // Simple session state tracking - no task management
 }
@@ -67,6 +70,7 @@ const COMPLETION_PATTERNS = [
   /✅|🎉|🏆|✓/g,
 ];
 
+// I think we just have to wait for the `idle` event
 export function detectTaskCompletion(messages: EventMessage[]): {
   completed: boolean;
   completionMessage?: string;
@@ -74,12 +78,15 @@ export function detectTaskCompletion(messages: EventMessage[]): {
   if (!messages?.length) return { completed: false };
 
   const lastMessage = messages[messages.length - 1];
-  const textParts = lastMessage?.parts?.filter((part) => part.type === 'text') || [];
+  const textParts =
+    lastMessage?.parts?.filter((part) => part.type === "text") || [];
 
   if (!textParts.length) return { completed: false };
 
-  const lastText = textParts[textParts.length - 1]?.text?.toLowerCase() || '';
-  const isCompleted = COMPLETION_PATTERNS.some((pattern) => pattern.test(lastText));
+  const lastText = textParts[textParts.length - 1]?.text?.toLowerCase() || "";
+  const isCompleted = COMPLETION_PATTERNS.some((pattern) =>
+    pattern.test(lastText),
+  );
 
   return {
     completed: isCompleted,
@@ -107,11 +114,13 @@ export async function processMessage(
   if (!message?.parts) return;
 
   // This would need session store context - for now just log
-  console.log(`Processing message ${message.info.id} from session ${sessionId}`);
+  console.log(
+    `Processing message ${message.info.id} from session ${sessionId}`,
+  );
 
   await Promise.all(
     message.parts.map(async (part) => {
-      if (part.type === 'text' && part.text?.trim()) {
+      if (part.type === "text" && part.text?.trim()) {
         console.log(`📝 Processing text part from message ${message.info.id}`);
       }
     }),
