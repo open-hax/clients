@@ -1,10 +1,11 @@
 # Real-time Capture Plugin
 
-Provides real-time monitoring and capture of OpenCode events, messages, and sessions.
+Provides real-time monitoring of OpenCode events and forwards new message events to OpenPlanner.
 
 ## Features
 
-- **Real-time Event Capture**: Captures all OpenCode events as they happen
+- **Real-time Event Capture**: Observes OpenCode events as they happen
+- **OpenPlanner Forwarding**: Streams `message.updated` and `message.removed` events to OpenPlanner through the gateway endpoint
 - **Session Monitoring**: Track session updates and changes
 - **Message Tracking**: Monitor message creation and updates
 - **Filtering Options**: Filter events by type, session ID, etc.
@@ -106,4 +107,11 @@ The plugin automatically limits the number of captured events to prevent memory 
 
 ## Integration with Indexer
 
-This plugin uses the same event handling logic as the indexer, ensuring consistency and reliability across the system.
+This plugin is responsible for real-time message ingestion. The `opencode-indexer` service should focus on historical backfill scans.
+
+## Environment Variables
+
+- `OPENPLANNER_EVENTS_ENABLED` (default: `1`) - enables/disables forwarding
+- `OPENPLANNER_EVENTS_ENDPOINT` (default: `http://127.0.0.1:8788/api/openplanner/v1/events`) - gateway ingestion endpoint
+- `OPENPLANNER_EVENTS_AUTH_TOKEN` (optional) - bearer token used when gateway requires auth
+- `OPENPLANNER_EVENTS_SOURCE` (default: `opencode.realtime-capture`) - `source` value stored in OpenPlanner events
